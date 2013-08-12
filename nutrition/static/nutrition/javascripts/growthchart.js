@@ -29,7 +29,7 @@ function prepData(conf) {
 
 	wfa_girls_0_to_5_meta = {};
 	wfa_girls_0_to_5_meta.lines = conf.wfa_all_0_to_5_meta.lines.slice();
-	wfa_girls_0_to_5_meta.title = "Weight for Age, Girls";
+	wfa_girls_0_to_5_meta.title = conf.wfa_girls_0_to_5_meta.title ? conf.wfa_girls_0_to_5_meta.title : "Weight for Age, Girls";
 
 	wfa_boys_0_to_5_zscores = [{"Month":"0","SD0":"3.3","SD1":"3.9","SD2":"4.4","SD3":"5","SD1neg":"2.9","SD2neg":"2.5","SD3neg":"2.1"},{"Month":"6","SD0":"7.9","SD1":"8.8","SD2":"9.8","SD3":"10.9","SD1neg":"7.1","SD2neg":"6.4","SD3neg":"5.7"},{"Month":"12","SD0":"9.6","SD1":"10.8","SD2":"12","SD3":"13.3","SD1neg":"8.6","SD2neg":"7.7","SD3neg":"6.9"},{"Month":"18","SD0":"10.9","SD1":"12.2","SD2":"13.7","SD3":"15.3","SD1neg":"9.8","SD2neg":"8.8","SD3neg":"7.8"},{"Month":"24","SD0":"12.2","SD1":"13.6","SD2":"15.3","SD3":"17.1","SD1neg":"10.8","SD2neg":"9.7","SD3neg":"8.6"},{"Month":"30","SD0":"13.3","SD1":"15","SD2":"16.9","SD3":"19","SD1neg":"11.8","SD2neg":"10.5","SD3neg":"9.4"},{"Month":"36","SD0":"14.3","SD1":"16.2","SD2":"18.3","SD3":"20.7","SD1neg":"12.7","SD2neg":"11.3","SD3neg":"10"},{"Month":"42","SD0":"15.3","SD1":"17.4","SD2":"19.7","SD3":"22.4","SD1neg":"13.6","SD2neg":"12","SD3neg":"10.6"},{"Month":"48","SD0":"16.3","SD1":"18.6","SD2":"21.2","SD3":"24.2","SD1neg":"14.4","SD2neg":"12.7","SD3neg":"11.2"},{"Month":"54","SD0":"17.3","SD1":"19.8","SD2":"22.7","SD3":"26","SD1neg":"15.2","SD2neg":"13.4","SD3neg":"11.8"},{"Month":"60","SD0":"18.3","SD1":"21","SD2":"24.2","SD3":"27.9","SD1neg":"16","SD2neg":"14.1","SD3neg":"12.4"}];
 
@@ -89,7 +89,7 @@ function prepData(conf) {
 
 var defaultConf = {
 	height: 325,
-  padding: 40,
+  padding: 50,
 	extraRightPadding: 60,
 	wfa_all_0_to_5_meta: {
     "lines": [{
@@ -360,12 +360,12 @@ function display_growth_chart(growthData, el, chartType, config) {
   // Axes text
   svg.append("text")
     .attr("text-anchor", "middle")
-    .attr("transform", "translate("+ (conf.padding/3) +","+(conf.height-conf.padding)/2+")rotate(-90)")
+    .attr("transform", "translate("+ (conf.padding/4) +","+(conf.height-conf.padding)/2+")rotate(-90)")
     .text("Weight (kg)");
 
   svg.append("text")
     .attr("text-anchor", "middle")
-    .attr("transform", "translate("+ (width/2) +","+(conf.height-(conf.padding/3))+")")
+    .attr("transform", "translate("+ (width/2) +","+(conf.height-(conf.padding/4))+")")
     .text("Age (months)");
 
   // Line labels (Normal, Malnourished, and Severely Malnourished)
@@ -382,9 +382,8 @@ function display_growth_chart(growthData, el, chartType, config) {
   }
 
   var tooltipOffset = conf.padding + 10;
-  var tooltipGroup = svg.append("g").attr("class", "tooltip");
 
-  var tooltipText = tooltipGroup.append("text")
+  var tooltipText = svg.append("text")
     .attr("x", tooltipOffset)
     .attr("y", tooltipOffset)
     .attr("class","tooltipText")
@@ -467,10 +466,22 @@ function display_growth_chart(growthData, el, chartType, config) {
     var textweight = 'Weight: ' + weight_in_kg + 'kg';
 		var text = textAge + '; ' + textweight;
 
+
+    var sex = null;
+		if (d.hasOwnProperty('sex')){
+      if (d.sex){
+        var sex = d.sex;
+      };
+    };
+
 		// if `id` is present, add `id` to tooltip text
 		if (d.hasOwnProperty('id')){
-			text = 'Child ' + d.id + ': ' + text;
-		}
+		  if (sex){
+			  text = 'Child ' + d.id + '(' + d.sex + '): ' + text;
+		  } else {
+			  text = 'Child ' + d.id + ': ' + text;
+      };
+		};
 
     return text;
   }

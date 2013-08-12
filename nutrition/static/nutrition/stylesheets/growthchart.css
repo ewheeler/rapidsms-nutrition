@@ -28,8 +28,8 @@
 }
 
 .dotSelected {
-	fill: #FFFFFF;
-	stroke: #FFFFFF;
+	fill: #AAAAAA;
+	stroke: #BBBBBB;
   stroke-width: 1.5px;
   cursor: pointer;
 }
@@ -57,7 +57,7 @@
     shape-rendering: crispEdges;
 }
 
-#chart text {
+#chart > text {
 	font: 11px "Helvetica Neue", "Helvetica", sans-serif;
 }
 

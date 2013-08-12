@@ -2,6 +2,9 @@
 	var myConfig = {
 		height: 275,
 		titles: false,
+    wfa_girls_0_to_5_meta:{
+      title: "Weight for Age, Girls (and/or unknown sex)"
+    },
 		wfa_all_0_to_5_meta: {
 			"lines": [{
 				"tag":"SD0",
@@ -26,8 +29,33 @@
 				"name":"-3 SD"
 			}],}
 	};
-	var boysData = {{ chart_data.boys|safe|default:"{}" }};
-	var girlsData = {{ chart_data.girls|safe|default:"{}" }};
+
+  var boysData = [];
+  var girlsData = [];
+  // LOL
+  var None = 0;
+
+  {% for patient in table.data.queryset %}
+    var id = {{ patient.patient_id }} ? {{ patient.patient_id }} : '';
+    var sex = {{ patient.sex }} ? {{ patient.sex }} : '';
+    if (sex === 'M'){
+      boysData.push({'height': {{ patient.height }},
+                     'weight': {{ patient.weight }},
+                     'age': {{ patient.age }},
+                     'sex': sex,
+                     'id': id
+                   });
+    } else {
+      // if sex is unknown, push to girls
+      girlsData.push({'height': {{ patient.height }},
+                     'weight': {{ patient.weight }},
+                     'age': {{ patient.age }},
+                     'sex': sex,
+                     'id': id
+                   });
+    };
+  {% endfor %}
+
 	var boysChart = display_growth_chart(boysData, "#chart-boys", "wfa_boys_0_to_5", myConfig);
 	var girlsChart = display_growth_chart(girlsData, "#chart-girls", "wfa_girls_0_to_5", myConfig);
  </script>
