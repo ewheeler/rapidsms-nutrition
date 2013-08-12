@@ -84,6 +84,8 @@ class Report(models.Model):
         if birth_date:
             diff = self.created.date() - birth_date
             return int(diff.days / 30.475)
+        else:
+            return None
 
     def analyze(self, save=True, calculator=None):
         """Uses pygrowup to calculate z-scores from indicator data.

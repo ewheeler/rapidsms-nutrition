@@ -39,6 +39,7 @@ class NutritionFormBase(object):
         except PatientDoesNotExist:
             msg = self.fields['patient_id'].error_messages['invalid']
             raise forms.ValidationError(msg)
+        # TODO this is specific to the djhealth backend
         if patient['status'] != 'A':
             msg = self.fields['patient_id'].error_messages['invalid']
             raise forms.ValidationError(msg)

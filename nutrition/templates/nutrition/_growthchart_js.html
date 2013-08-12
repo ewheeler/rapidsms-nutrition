@@ -37,11 +37,12 @@
 
   {% for patient in table.data.queryset %}
     var id = {{ patient.patient_id }} ? {{ patient.patient_id }} : '';
-    var sex = {{ patient.sex }} ? {{ patient.sex }} : '';
+    var sex = '{{ patient.sex }}' ? '{{ patient.sex }}' : '';
+    var age = '{{ patient.age }}' ? '{{ patient.age }}' : None;
     if (sex === 'M'){
       boysData.push({'height': {{ patient.height }},
                      'weight': {{ patient.weight }},
-                     'age': {{ patient.age }},
+                     'age': age,
                      'sex': sex,
                      'id': id
                    });
@@ -49,7 +50,7 @@
       // if sex is unknown, push to girls
       girlsData.push({'height': {{ patient.height }},
                      'weight': {{ patient.weight }},
-                     'age': {{ patient.age }},
+                     'age': age,
                      'sex': sex,
                      'id': id
                    });
