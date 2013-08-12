@@ -6,10 +6,12 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from healthcare.api import client
-from healthcare.exceptions import PatientDoesNotExist, ProviderDoesNotExist
+from healthcare.exceptions import PatientDoesNotExist
 
 from nutrition.models import Report
-from nutrition.fields import NullDecimalField, NullYesNoField, PlainErrorList
+from nutrition.fields import NullDecimalField
+from nutrition.fields import NullYesNoField
+from nutrition.fields import PlainErrorList
 
 
 class NutritionFormBase(object):
@@ -63,7 +65,7 @@ class CancelReportForm(NutritionFormBase, forms.Form):
         # Descriptive error messages.
         self.messages = {
             'patient_id': _('Nutrition reports must be for a patient who is '
-                    'registered and active.'),
+                            'registered and active.'),
         }
         self.messages.update(kwargs.pop('messages', {}))
 
@@ -92,8 +94,8 @@ class CancelReportForm(NutritionFormBase, forms.Form):
         # reports to the beginning of time.
         patient_id = self.cleaned_data['patient_id']
         # Report.DoesNotExist should be handled by the caller.
-        report = Report.objects.filter(patient_id=patient_id)\
-                                .latest('created')
+        report = Report.objects.filter(patient_id=patient_id).latest('created')
+
         report.cancel()
         return report
 
@@ -105,11 +107,11 @@ class CreateReportForm(NutritionFormBase, forms.ModelForm):
     """
     oedema = NullYesNoField(required=False)
     weight = NullDecimalField(min_value=Decimal('0'), max_digits=4,
-            required=False)
+                              required=False)
     height = NullDecimalField(min_value=Decimal('0'), max_digits=4,
-            required=False)
+                              required=False)
     muac = NullDecimalField(min_value=Decimal('0'), max_digits=4,
-            required=False)
+                            required=False)
 
     class Meta:
         model = Report
@@ -119,13 +121,13 @@ class CreateReportForm(NutritionFormBase, forms.ModelForm):
         # Descriptive field error messages.
         self.messages = {
             'patient_id': _('Nutrition reports must be for a patient who '
-                    'is registered and active.'),
+                            'is registered and active.'),
             'weight': _('Please send a positive value (in kg) for weight.'),
             'height': _('Please send a positive value (in cm) for height.'),
             'muac': _('Please send a positive value (in cm) for mid-upper '
-                    'arm circumference.'),
+                      'arm circumference.'),
             'oedema': _('Please send Y or N to indicate whether the patient '
-                    'has oedema.'),
+                        'has oedema.'),
         }
         self.messages.update(kwargs.pop('messages', {}))
 
@@ -144,7 +146,9 @@ class CreateReportForm(NutritionFormBase, forms.ModelForm):
         for field_name in ('weight', 'height', 'muac'):
             field = self.fields[field_name]
             field.error_messages['max_digits'] = _('Nutrition report '
-                    'measurements should be no more than %s digits in length.')
+                                                   'measurements should be no '
+                                                   'more than %s digits '
+                                                   'in length.')
 
     def save(self, *args, **kwargs):
         self.instance.raw_text = self.raw_text
@@ -156,11 +160,11 @@ class ReportFilterForm(forms.Form):
     patient_id = forms.CharField(label='Patient ID', required=False)
     reporter_id = forms.CharField(label='Reporter ID', required=False)
     status = forms.ChoiceField(choices=[('', '')] + Report.STATUSES,
-            required=False)
+                               required=False)
 
     def get_items(self):
         if self.is_valid():
             filters = dict([(k, v) for k, v in self.cleaned_data.iteritems()
-                    if v])
+                            if v])
             return Report.objects.filter(**filters)
         return Report.objects.none()

@@ -18,11 +18,11 @@ class NutritionHandlerBase(object):
 
     _common_messages = {  # Messages common to most or all Nutrition handlers.
         'form_error': _('Sorry, an error occurred while processing your '
-                'message: {message}'),
+                        'message: {message}'),
 
         'error': _('Sorry, an unexpected error occurred while processing your '
-                'message. Please contact your administrator if this '
-                'continues to occur.'),
+                   'message. Please contact your administrator if this '
+                   'continues to occur.'),
     }
     _messages = {}  # Handler-specific messages.
 
@@ -33,7 +33,7 @@ class NutritionHandlerBase(object):
 
     def _get_form(self, data):
         return self.form_class(data, raw_text=self.raw_text,
-                connection=self.connection)
+                               connection=self.connection)
 
     @classmethod
     def _keyword(cls):
@@ -75,7 +75,8 @@ class NutritionHandlerBase(object):
         # The reporter will be determined from the message connection.
         self.connection = self.msg.connection
         logger.debug('Received {keyword} message from {connection}.'.format(
-                keyword=self._colloquial_keyword(), connection=self.connection))
+                     keyword=self._colloquial_keyword(),
+                     connection=self.connection))
 
         # Parse the message into its components.
         try:
@@ -87,7 +88,7 @@ class NutritionHandlerBase(object):
         else:
             data = ', '.join([': '.join((k, v)) for k, v in parsed.items()])
             logger.debug('Parsed {keyword} data: {data}'.format(
-                    keyword=self._colloquial_keyword(), data=data))
+                         keyword=self._colloquial_keyword(), data=data))
 
         self._process(parsed)  # Subclasses must process parsed data.
 

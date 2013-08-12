@@ -22,17 +22,19 @@ class CancelReportHandler(NutritionHandlerBase, KeywordHandler):
 
     _messages = {
         'help': _('To cancel the most recent nutrition report, send: {prefix} '
-                '{keyword} <patient_id>'),
+                  '{keyword} <patient_id>'),
 
         'success': _('Thanks {reporter}. The most recent nutrition report for '
-                '{patient} ({patient_id}) has been cancelled.'),
+                     '{patient} ({patient_id}) has been cancelled.'),
 
         'no_report': _('Sorry, {patient_id} does not have any reports in the '
-                'system.'),
+                       'system.'),
 
         'format_error': _('Sorry, the system could not understand whose '
-                'report you would like to cancel. To cancel the most recent '
-                'nutrition report, send: {prefix} {keyword} <patient_id>'),
+                          'report you would like to cancel. To cancel the '
+                          'most recent nutrition report, send: {prefix} '
+                          '{keyword} <patient_id>'),
+
     }
 
     def _parse(self, raw_text):

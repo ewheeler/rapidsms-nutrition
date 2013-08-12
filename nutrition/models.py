@@ -1,6 +1,4 @@
 from __future__ import unicode_literals
-import datetime
-from decimal import Decimal
 from pygrowup.exceptions import InvalidMeasurement
 from pygrowup.pygrowup import Calculator
 
@@ -8,7 +6,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from healthcare.api import client
-from healthcare.exceptions import PatientDoesNotExist, ProviderDoesNotExist
+from healthcare.exceptions import PatientDoesNotExist
+from healthcare.exceptions import ProviderDoesNotExist
 
 
 class Report(models.Model):
@@ -28,10 +27,10 @@ class Report(models.Model):
     # Meta data.
     raw_text = models.CharField(max_length=255, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True,
-            verbose_name='report date')
+                                   verbose_name='report date')
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=1, blank=True, null=True,
-            choices=STATUSES, default=UNANALYZED)
+                              choices=STATUSES, default=UNANALYZED)
     active = models.BooleanField(default=True)
 
     # Local identifiers, unique to the nutrition healthcare sources defined in
@@ -42,25 +41,28 @@ class Report(models.Model):
 
     # Global identifiers, created by rapidsms-healthcare.
     global_reporter_id = models.CharField(max_length=255, blank=True,
-            null=True)
+                                          null=True)
     global_patient_id = models.CharField(max_length=255)
 
     # Indicators, gathered from the reporter.
     height = models.DecimalField(max_digits=4, decimal_places=1, blank=True,
-            null=True, verbose_name='Height (CM)')
+                                 null=True, verbose_name='Height (CM)')
     weight = models.DecimalField(max_digits=4, decimal_places=1, blank=True,
-            null=True, verbose_name='Weight (KG)')
+                                 null=True, verbose_name='Weight (KG)')
     muac = models.DecimalField(max_digits=4, decimal_places=1, blank=True,
-            null=True, verbose_name='MUAC (CM)')
+                               null=True, verbose_name='MUAC (CM)')
     oedema = models.NullBooleanField(default=None)
 
     # Nutrition z-scores, calcuated from indicators.
     weight4age = models.DecimalField(max_digits=4, decimal_places=2,
-            blank=True, null=True, verbose_name='Weight for Age')
+                                     blank=True, null=True,
+                                     verbose_name='Weight for Age')
     height4age = models.DecimalField(max_digits=4, decimal_places=2,
-            blank=True, null=True, verbose_name='Height for Age')
+                                     blank=True, null=True,
+                                     verbose_name='Height for Age')
     weight4height = models.DecimalField(max_digits=4, decimal_places=2,
-            blank=True, null=True, verbose_name='Weight for Height')
+                                        blank=True, null=True,
+                                        verbose_name='Weight for Height')
 
     class Meta:
         permissions = (
@@ -70,7 +72,7 @@ class Report(models.Model):
 
     def __unicode__(self):
         return 'Patient {0} on {1}'.format(self.patient_id,
-                self.created.date())
+                                           self.created.date())
 
     @property
     def age(self):
@@ -94,7 +96,8 @@ class Report(models.Model):
         # cannot analyze the measurements. If neither weight nor height is
         # available, then short-circuit here because there will be nothing
         # to analyze.
-        if not all([self.age, self.sex]) or not any([self.weight, self.height]):
+        if not all([self.age, self.sex]) or \
+           not any([self.weight, self.height]):
             self.weight4age = None
             self.height4age = None
             self.weight4height = None
@@ -112,17 +115,17 @@ class Report(models.Model):
 
             if self.weight:
                 self.weight4age = calculator.wfa(self.weight, self.age,
-                        self.sex)
+                                                 self.sex)
             if self.height:
-               self.height4age = calculator.lhfa(self.height, self.age,
-                       self.sex)
+                self.height4age = calculator.lhfa(self.height, self.age,
+                                                  self.sex)
             if self.weight and self.height:
                 if self.age <= 24:
                     self.weight4height = calculator.wfl(self.weight, self.age,
-                            self.sex, self.height)
+                                                        self.sex, self.height)
                 else:
                     self.weight4height = calculator.wfh(self.weight, self.age,
-                            self.sex, self.height)
+                                                        self.sex, self.height)
         except InvalidMeasurement as e:
             # This may be thrown by pygrowup when calculating z-scores if
             # the measurements provided are beyond reasonable limits.
@@ -172,7 +175,7 @@ class Report(models.Model):
             else:
                 try:
                     self._reporter = client.providers.get(
-                            self.global_reporter_id)
+                                        self.global_reporter_id)
                 except ProviderDoesNotExist:
                     self._reporter = None
         return self._reporter
